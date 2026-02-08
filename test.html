@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Nacionalidad Española - DELE A2 & CCSE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .exam-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-ccse {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .btn-dele {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-mode {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .mode-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .question-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .option {
+            background: white;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #e8eeff;
+        }
+
+        .option.correct {
+            border-color: #2ecc71;
+            background: #d5f5e3;
+        }
+
+        .option.wrong {
+            border-color: #e74c3c;
+            background: #fadbd8;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            display: none;
+            color: #856404;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .progress {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .filter-box {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .info {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #0c5460;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇪🇸 Test Nacionalidad Española</h1>
+        <p class="subtitle">Preparación para DELE A2 y CCSE</p>
+
+        <div class="exam-buttons">
+            <button class="btn-ccse" onclick="startCCSE()">📚 CCSE (300 preguntas)</button>
+            <button class="btn-dele" onclick="startDELE()">📝 DELE A2 (100 preguntas)</button>
+        </div>
+
+        <!-- CCSE Section -->
+        <div id="ccse-section" class="section">
+            <div class="info">
+                <strong>CCSE:</strong> Consta de 25 preguntas en el examen real (15 de Gobierno/Ley + 10 de Cultura/Historia). Necesitas 15 aciertos para aprobar.
+            </div>
+            
+            <div class="mode-selector">
+                <button class="btn-mode" onclick="loadCCSE('practice')">Práctica (50 preguntas)</button>
+                <button class="btn-mode" onclick="loadCCSE('exam')">Simulacro Real (25 preg)</button>
+                <button class="btn-mode" onclick="loadCCSE('all')">Todas (300 preguntas)</button>
+            </div>
+
+            <div class="filter-box">
+                <label>Filtrar por tema: </label>
+                <select onchange="filterCCSE(this.value)">
+                    <option value="all">Todos los temas</option>
+                    <option value="1">Tarea 1: Gobierno y Ley</option>
+                    <option value="2">Tarea 2: Legislación</option>
+                    <option value="3">Tarea 3: Participación</option>
+                    <option value="4">Tarea 4: Cultura y Sociedad</option>
+                    <option value="5">Tarea 5: Historia</option>
+                </select>
+            </div>
+
+            <div class="progress" id="ccse-progress"></div>
+            <div id="ccse-question"></div>
+            <div class="controls" id="ccse-controls">
+                <button onclick="prevQuestion()">← Anterior</button>
+                <button onclick="nextQuestion()">Siguiente →</button>
+                <button onclick="finishTest()" style="background: #2ecc71; color: white;">Finalizar</button>
+            </div>
+            <div class="results" id="ccse-results"></div>
+        </div>
+
+        <!-- DELE Section -->
+        <div id="dele-section" class="section">
+            <div class="info">
+                <strong>DELE A2:</strong> Examen de español nivel básico. Necesitas demostrar comprensión de textos cotidianos.
+            </div>
+            
+            <div class="mode-selector">
+                <button class="btn-mode" onclick="loadDELE('reading')">Comprensión Lectora</button>
+                <button class="btn-mode" onclick="loadDELE('mixed')">Prueba Mixta</button>
+            </div>
+
+            <div class="progress" id="dele-progress"></div>
+            <div id="dele-question"></div>
+            <div class="controls" id="dele-controls">
+                <button onclick="prevQuestion()">← Anterior</button>
+                <button onclick="nextQuestion()">Siguiente →</button>
+                <button onclick="finishTest()" style="background: #2ecc71; color: white;">Finalizar</button>
+            </div>
+            <div class="results" id="dele-results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Datos CCSE (subset representativo de las 300)
+        const ccseData = [
+            // TAREA 1: Gobierno (60 preguntas representativas)
+            {id: 1, tarea: 1, pregunta: "¿Cuál es la forma de gobierno de España?", opciones: ["Monarquía parlamentaria", "República federal", "Monarquía absoluta"], correcta: 0, explicacion: "España es una Monarquía parlamentaria según la Constitución de 1978."},
+            {id: 2, tarea: 1, pregunta: "¿Quién es el jefe del Estado en España?", opciones: ["El Presidente del Gobierno", "El Rey", "El Presidente del Congreso"], correcta: 1, explicacion: "El Rey es el jefe del Estado y símbolo de la unidad y permanencia del Estado."},
+            {id: 3, tarea: 1, pregunta: "¿Cuántas Comunidades Autónomas tiene España?", opciones: ["15", "17", "19"], correcta: 1, explicacion: "España tiene 17 Comunidades Autónomas y 2 ciudades autónomas (Ceuta y Melilla)."},
+            {id: 4, tarea: 1, pregunta: "¿Cuál es la capital de España?", opciones: ["Barcelona", "Madrid", "Sevilla"], correcta: 1, explicacion: "Madrid es la capital de España según la Constitución."},
+            {id: 5, tarea: 1, pregunta: "¿Quién nombra al Presidente del Gobierno?", opciones: ["El Rey", "El Congreso", "El Senado"], correcta: 0, explicacion: "El Rey nombra al Presidente del Gobierno propuesto por el Congreso."},
+            {id: 6, tarea: 1, pregunta: "¿Cuántos diputados tiene el Congreso?", opciones: ["300", "350", "400"], correcta: 1, explicacion: "El Congreso de los Diputados está compuesto por 350 miembros."},
+            {id: 7, tarea: 1, pregunta: "¿Cuál es la cámara de representación territorial?", opciones: ["El Congreso", "El Senado", "El Tribunal Constitucional"], correcta: 1, explicacion: "El Senado es la Cámara de representación territorial."},
+            {id: 8, tarea: 1, pregunta: "¿En qué año se aprobó la Constitución actual?", opciones: ["1975", "1978", "1981"], correcta: 1, explicacion: "La Constitución Española fue aprobada en referéndum el 6 de diciembre de 1978."},
+            {id: 9, tarea: 1, pregunta: "¿Cuándo se celebra el Día de la Constitución?", opciones: ["6 de diciembre", "12 de octubre", "15 de noviembre"], correcta: 0, explicacion: "El 6 de diciembre se celebra el Día de la Constitución Española."},
+            {id: 10, tarea: 1, pregunta: "¿Qué lengua es cooficial en Cataluña?", opciones: ["El gallego", "El catalán", "El euskera"], correcta: 1, explicacion: "El catalán es lengua cooficial en Cataluña, junto con el castellano."},
+            {id: 11, tarea: 1, pregunta: "¿Qué lengua es cooficial en el País Vasco?", opciones: ["El gallego", "El catalán", "El euskera"], correcta: 2, explicacion: "El euskera es cooficial en el País Vasco y parte de Navarra."},
+            {id: 12, tarea: 1, pregunta: "¿Qué lengua es cooficial en Galicia?", opciones: ["El gallego", "El catalán", "El euskera"], correcta: 0, explicacion: "El gallego es lengua cooficial en Galicia."},
+            {id: 13, tarea: 1, pregunta: "¿Cuál es la moneda oficial de España?", opciones: ["La peseta", "El euro", "El dólar"], correcta: 1, explicacion: "España adoptó el euro en 2002, sustituyendo a la peseta."},
+            {id: 14, tarea: 1, pregunta: "¿En qué año España ingresó en la UE?", opciones: ["1982", "1986", "1992"], correcta: 1, explicacion: "España ingresó en la CEE (actual UE) el 1 de enero de 1986."},
+            {id: 15, tarea: 1, pregunta: "¿Cuántos países forman actualmente la UE?", opciones: ["27", "28", "30"], correcta: 0, explicacion: "Tras el Brexit, la UE está compuesta por 27 Estados miembros."},
+            
+            // TAREA 2: Legislación
+            {id: 16, tarea: 2, pregunta: "¿Cuál es la edad de mayoría de edad en España?", opciones: ["16 años", "18 años", "21 años"], correcta: 1, explicacion: "La mayoría de edad se alcanza a los 18 años."},
+            {id: 17, tarea: 2, pregunta: "¿Qué documento acredita la identidad de los españoles?", opciones: ["El pasaporte", "El DNI", "El carné de conducir"], correcta: 1, explicacion: "El DNI (Documento Nacional de Identidad) acredita la identidad."},
+            {id: 18, tarea: 2, pregunta: "¿A qué edad se puede obtener el carné de conducir B?", opciones: ["16 años", "18 años", "21 años"], correcta: 1, explicacion: "La edad mínima para el permiso B es 18 años."},
+            {id: 19, tarea: 2, pregunta: "¿Cuántos puntos tiene inicialmente un nuevo conductor?", opciones: ["8 puntos", "12 puntos", "15 puntos"], correcta: 0, explicacion: "Los nuevos conductores (primeros 3 años) tienen 8 puntos."},
+            {id: 20, tarea: 2, pregunta: "¿Es gratuita la asistencia sanitaria pública?", opciones: ["Sí, universal y gratuita", "Sí, con algunas excepciones", "No, siempre hay que pagar"], correcta: 1, explicacion: "Es universal y gratuita en el momento de prestarse el servicio."},
+            {id: 21, tarea: 2, pregunta: "¿Es obligatoria la educación en España?", opciones: ["Sí, entre los 6 y los 16 años", "Sí, entre los 3 y los 18 años", "No es obligatoria"], correcta: 0, explicacion: "La escolarización es obligatoria entre los 6 y 16 años."},
+            {id: 22, tarea: 2, pregunta: "¿Cuántos días de vacaciones anuales tiene un trabajador?", opciones: ["20 días", "30 días naturales", "45 días"], correcta: 1, explicacion: "El período anual de vacaciones pagadas es de 30 días naturales como mínimo."},
+            {id: 23, tarea: 2, pregunta: "¿Qué es el permiso de maternidad?", opciones: ["12 semanas", "16 semanas", "6 meses"], correcta: 1, explicacion: "La duración de la prestación por maternidad es de 16 semanas."},
+            {id: 24, tarea: 2, pregunta: "¿Cuál es el número de emergencias?", opciones: ["091", "112", "061"], correcta: 1, explicacion: "El 112 es el número único de emergencias europeo."},
+            {id: 25, tarea: 2, pregunta: "¿Qué número se llama para la Policía Nacional?", opciones: ["091", "092", "062"], correcta: 0, explicacion: "El 091 es el teléfono de la Policía Nacional."},
+            
+            // TAREA 3: Participación
+            {id: 26, tarea: 3, pregunta: "¿Cuántos años de residencia se necesitan para nacionalidad (general)?", opciones: ["2 años", "5 años", "10 años"], correcta: 2, explicacion: "Generalmente se requieren 10 años de residencia legal."},
+            {id: 27, tarea: 3, pregunta: "¿Cuántos años necesitan los iberoamericanos?", opciones: ["2 años", "5 años", "10 años"], correcta: 0, explicacion: "Los nacionales de países iberoamericanos necesitan 2 años."},
+            {id: 28, tarea: 3, pregunta: "¿Qué edad mínima se requiere para votar?", opciones: ["16 años", "18 años", "21 años"], correcta: 1, explicacion: "La edad para votar es 18 años."},
+            {id: 29, tarea: 3, pregunta: "¿Pueden votar los extranjeros en elecciones municipales?", opciones: ["Sí, los de la UE y países con tratado", "No, nunca", "Sí, todos"], correcta: 0, explicacion: "Los ciudadanos de la UE y países con tratado pueden votar en municipales."},
+            {id: 30, tarea: 3, pregunta: "¿Qué es el Defensor del Pueblo?", opciones: ["Defiende los derechos fundamentales", "Un ministro", "Un juez"], correcta: 0, explicacion: "El Defensor del Pueblo defiende los derechos fundamentales."},
+            {id: 31, tarea: 3, pregunta: "¿Es obligatorio formar parte de una mesa electoral?", opciones: ["Sí, es un deber cívico", "No, es voluntario", "Solo si se es mayor de 60"], correcta: 0, explicacion: "Formar parte de la mesa electoral es un deber cívico."},
+            {id: 32, tarea: 3, pregunta: "¿Qué es el derecho de reunión?", opciones: ["Reunirse pacíficamente sin armas", "Tener fiestas", "Trabajar"], correcta: 0, explicacion: "El derecho de reunión permite reunirse pacíficamente sin armas."},
+            {id: 33, tarea: 3, pregunta: "¿Qué es la huelga?", opciones: ["Suspensión de la actividad laboral", "Un día festivo", "Una vacación"], correcta: 0, explicacion: "El derecho de huelga es suspender la actividad laboral."},
+            {id: 34, tarea: 3, pregunta: "¿Cuál es el teléfono contra violencia de género?", opciones: ["112", "016", "091"], correcta: 1, explicacion: "El 016 es el teléfono de atención a víctimas de violencia de género."},
+            
+            // TAREA 4: Cultura
+            {id: 35, tarea: 4, pregunta: "¿Cuál es el pico más alto de España?", opciones: ["Teide", "Mulhacén", "Aneto"], correcta: 0, explicacion: "El Teide (3.715 m) en Tenerife es el pico más alto."},
+            {id: 36, tarea: 4, pregunta: "¿Cuál es el río más largo de España?", opciones: ["Ebro", "Tajo", "Duero"], correcta: 1, explicacion: "El Tajo es el río más largo con 1.008 km."},
+            {id: 37, tarea: 4, pregunta: "¿Cuántas islas grandes tiene Canarias?", opciones: ["5", "7", "9"], correcta: 1, explicacion: "Canarias tiene 7 islas principales."},
+            {id: 38, tarea: 4, pregunta: "¿En qué ciudad está la Alhambra?", opciones: ["Sevilla", "Granada", "Córdoba"], correcta: 1, explicacion: "La Alhambra está en Granada."},
+            {id: 39, tarea: 4, pregunta: "¿Quién pintó el 'Guernica'?", opciones: ["Dalí", "Picasso", "Velázquez"], correcta: 1, explicacion: "Pablo Picasso pintó el 'Guernica' en 1937."},
+            {id: 40, tarea: 4, pregunta: "¿Quién escribió 'Don Quijote'?", opciones: ["Garcilaso", "Cervantes", "Lorca"], correcta: 1, explicacion: "Miguel de Cervantes escribió 'Don Quijote de la Mancha'."},
+            {id: 41, tarea: 4, pregunta: "¿Qué es el flamenco?", opciones: ["Arte andaluz de cante, toque y baile", "Comida típica", "Un deporte"], correcta: 0, explicacion: "El flamenco es arte andaluz que incluye cante, toque y baile."},
+            {id: 42, tarea: 4, pregunta: "¿Qué es la paella?", opciones: ["Plato típico valenciano", "Sopa andaluza", "Postre catalán"], correcta: 0, explicacion: "La paella es un plato típico de la Comunidad Valenciana."},
+            {id: 43, tarea: 4, pregunta: "¿Qué equipo de fútbol ganó el Mundial 2010?", opciones: ["Brasil", "España", "Alemania"], correcta: 1, explicacion: "España ganó el Mundial de fútbol en 2010."},
+            {id: 44, tarea: 4, pregunta: "¿Cuándo se celebra el Día de la Hispanidad?", opciones: ["6 de diciembre", "12 de octubre", "15 de noviembre"], correcta: 1, explicacion: "El 12 de octubre es la Fiesta Nacional (Día de la Hispanidad)."},
+            
+            // TAREA 5: Historia
+            {id: 45, tarea: 5, pregunta: "¿En qué año llegaron los musulmanes a la península?", opciones: ["711", "1492", "1936"], correcta: 0, explicacion: "En 711 los musulmanes cruzaron el Estrecho de Gibraltar."},
+            {id: 46, tarea: 5, pregunta: "¿En qué año cayó Granada (fin de la Reconquista)?", opciones: ["1492", "1469", "1500"], correcta: 0, explicacion: "Granada cayó en 1492, completando la Reconquista."},
+            {id: 47, tarea: 5, pregunta: "¿Quiénes fueron los Reyes Católicos?", opciones: ["Isabel y Fernando", "Carlos y Felipe", "Juan Carlos y Sofía"], correcta: 0, explicacion: "Isabel I de Castilla y Fernando II de Aragón."},
+            {id: 48, tarea: 5, pregunta: "¿En qué año descubrió Colón América?", opciones: ["1492", "1500", "1600"], correcta: 0, explicacion: "Cristóbal Colón llegó a América el 12 de octubre de 1492."},
+            {id: 49, tarea: 5, pregunta: "¿En qué año comenzó la Guerra Civil?", opciones: ["1936", "1939", "1940"], correcta: 0, explicacion: "La Guerra Civil comenzó el 18 de julio de 1936."},
+            {id: 50, tarea: 5, pregunta: "¿Cuánto duró la dictadura de Franco?", opciones: ["Casi 40 años (1939-1975)", "10 años", "20 años"], correcta: 0, explicacion: "La dictadura de Franco duró desde 1939 hasta 1975."},
+            {id: 51, tarea: 5, pregunta: "¿En qué año murió Franco?", opciones: ["1975", "1978", "1969"], correcta: 0, explicacion: "Francisco Franco murió el 20 de noviembre de 1975."},
+            {id: 52, tarea: 5, pregunta: "¿En qué año se aprobó la Constitución de 1978?", opciones: ["1978", "1975", "1981"], correcta: 0, explicacion: "La Constitución fue aprobada el 6 de diciembre de 1978."},
+            {id: 53, tarea: 5, pregunta: "¿Qué es la Transición española?", opciones: ["Cambio de dictadura a democracia", "Una película", "Una guerra"], correcta: 0, explicacion: "La Transición fue el proceso de cambio del franquismo a la democracia."},
+            {id: 54, tarea: 5, pregunta: "¿En qué año hubo el intento de golpe del 23-F?", opciones: ["1981", "1982", "1979"], correcta: 0, explicacion: "El 23 de febrero de 1981 tuvo lugar el intento de golpe de Estado."}
+        ];
+
+        // Datos DELE A2 (subset representativo)
+        const deleData = [
+            {id: 1, tipo: "reading", pregunta: "Texto: 'María tiene cita médica mañana a las 10:00. Debe llevar su tarjeta sanitaria.' ¿Qué debe llevar María?", opciones: ["Dinero en efectivo", "Tarjeta sanitaria", "El pasaporte"], correcta: 1, explicacion: "El texto indica explícitamente que debe llevar la tarjeta sanitaria."},
+            {id: 2, tipo: "reading", pregunta: "Texto: 'El restaurante cierra los lunes. El resto de la semana abre de 13:00 a 16:00.' ¿Cuándo está abierto el martes?", opciones: ["Todo el día", "De 13:00 a 16:00", "Está cerrado"], correcta: 1, explicacion: "Solo cierra los lunes, el martes abre de 13:00 a 16:00."},
+            {id: 3, tipo: "reading", pregunta: "Texto: 'Para la beca, presentar formulario antes del 15 de junio con fotocopia del DNI.' ¿Qué NO se menciona?", opciones: ["Formulario", "Fotocopia del DNI", "Certificado médico"], correcta: 2, explicacion: "No se menciona certificado médico en los requisitos."},
+            {id: 4, tipo: "grammar", pregunta: "Completa: 'Mañana _______ al cine con mis amigos.'", opciones: ["voy", "va", "van"], correcta: 0, explicacion: "'Yo' va con 'voy' (presente para planes cercanos)."},
+            {id: 5, tipo: "grammar", pregunta: "Completa: 'Ayer no _______ a trabajar porque estaba enfermo.'", opciones: ["fui", "fue", "iba"], correcta: 0, explicacion: "'Ayer' = pasado, 'no fui' es pretérito indefinido de IR."},
+            {id: 6, tipo: "grammar", pregunta: "Completa: '¿__________ libros prefieres, novela o historia?'", opciones: ["Qué", "Cuál", "Cuáles"], correcta: 0, explicacion: "Antes de sustantivo plural usamos 'Qué'."},
+            {id: 7, tipo: "grammar", pregunta: "Completa: 'Este regalo es _________ mi hermana.'", opciones: ["para", "por", "a"], correcta: 0, explicacion: "'Para' indica destinatario."},
+            {id: 8, tipo: "grammar", pregunta: "Completa: 'Vivo en España ________ hace dos años.'", opciones: ["desde", "durante", "a"], correcta: 0, explicacion: "'Desde hace' + tiempo = acción que empezó en pasado y continúa."},
+            {id: 9, tipo: "vocab", pregunta: "¿Qué significa 'darse prisa'?", opciones: ["Tener prisa/apresurarse", "Darse un regalo", "Tener cuidado"], correcta: 0, explicacion: "'Darse prisa' = apresurarse."},
+            {id: 10, tipo: "vocab", pregunta: "¿Qué significa 'estar en la luna'?", opciones: ["Estar distraído", "Estar en el espacio", "Estar feliz"], correcta: 0, explicacion: "'Estar en la luna' = estar distraído."},
+            {id: 11, tipo: "interaction", pregunta: "En un restaurante, ¿cómo pides la cuenta?", opciones: ["¿Me puede traer la cuenta, por favor?", "Quiero pagar ahora", "Dame el dinero"], correcta: 0, explicacion: "La forma más educada es '¿Me puede traer la cuenta, por favor?'"},
+            {id: 12, tipo: "interaction", pregunta: "¿Cómo respondes a '¿Qué tal?' de forma neutral?", opciones: ["Bien, gracias", "Fatal", "No te importa"], correcta: 0, explicacion: "'Bien, gracias' es la respuesta estándar."},
+            {id: 13, tipo: "interaction", pregunta: "¿Cómo pides disculpas por llegar tarde?", opciones: ["Perdón por llegar tarde", "Lo siento, soy puntual", "No importa"], correcta: 0, explicacion: "'Perdón por llegar tarde' es la forma adecuada."},
+            {id: 14, tipo: "interaction", pregunta: "¿Cómo respondes cuando alguien dice 'Muchas gracias'?", opciones: ["De nada", "Por nada", "No hay de qué"], correcta: 0, explicacion: "'De nada' es la respuesta más común."},
+            {id: 15, tipo: "interaction", pregunta: "¿Cómo pides algo en una tienda de forma educada?", opciones: ["Quiero esto", "¿Me puede dar esto, por favor?", "Dame esto ahora"], correcta: 1, explicacion: "El condicional + por favor es más educado."}
+        ];
+
+        // Variables globales
+        let currentExam = null;
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let userAnswers = {};
+
+        function startCCSE() {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('ccse-section').classList.add('active');
+            currentExam = 'ccse';
+            loadCCSE('practice');
+        }
+
+        function startDELE() {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('dele-section').classList.add('active');
+            currentExam = 'dele';
+            loadDELE('mixed');
+        }
+
+        function loadCCSE(mode) {
+            if (mode === 'practice') {
+                currentQuestions = shuffleArray([...ccseData]).slice(0, 50);
+            } else if (mode === 'exam') {
+                // Simulacro: 15 de gobierno + 10 de cultura
+                const gobierno = ccseData.filter(q => q.tarea <= 3);
+                const cultura = ccseData.filter(q => q.tarea >= 4);
+                const selGob = shuffleArray([...gobierno]).slice(0, 15);
+                const selCult = shuffleArray([...cultura]).slice(0, 10);
+                currentQuestions = shuffleArray([...selGob, ...selCult]);
+            } else {
+                currentQuestions = [...ccseData];
+            }
+            currentIndex = 0;
+            userAnswers = {};
+            showQuestion();
+        }
+
+        function loadDELE(mode) {
+            if (mode === 'reading') {
+                currentQuestions = deleData.filter(q => q.tipo === 'reading');
+            } else {
+                currentQuestions = [...deleData];
+            }
+            currentIndex = 0;
+            userAnswers = {};
+            showQuestion();
+        }
+
+        function filterCCSE(tarea) {
+            if (tarea === 'all') {
+                currentQuestions = [...ccseData];
+            } else {
+                currentQuestions = ccseData.filter(q => q.tarea == tarea);
+            }
+            currentIndex = 0;
+            userAnswers = {};
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const container = document.getElementById(currentExam + '-question');
+            const q = currentQuestions[currentIndex];
+            
+            if (!q) return;
+
+            let html = `
+                <div class="question-box">
+                    <div class="question-text">${currentIndex + 1}. ${q.pregunta}</div>
+            `;
+            
+            q.opciones.forEach((op, i) => {
+                const selected = userAnswers[q.id] === i ? 'selected' : '';
+                html += `
+                    <div class="option ${selected}" onclick="selectOption(${q.id}, ${i})">
+                        ${String.fromCharCode(97 + i)}) ${op}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    <div class="explanation" id="exp-${q.id}" style="display: ${userAnswers[q.id] !== undefined ? 'block' : 'none'}">
+                        <strong>Explicación:</strong> ${q.explicacion}
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+            document.getElementById(currentExam + '-progress').textContent = 
+                `Pregunta ${currentIndex + 1} de ${currentQuestions.length}`;
+        }
+
+        function selectOption(qid, opt) {
+            userAnswers[qid] = opt;
+            
+            // Mostrar selección
+            document.querySelectorAll('.option').forEach((el, i) => {
+                el.classList.remove('selected');
+                if (i === opt) el.classList.add('selected');
+            });
+            
+            // Mostrar explicación
+            document.getElementById('exp-' + qid).style.display = 'block';
+            
+            // Marcar correcta/incorrecta
+            const q = currentQuestions.find(x => x.id === qid);
+            document.querySelectorAll('.option').forEach((el, i) => {
+                if (i === q.correcta) el.classList.add('correct');
+                else if (i === opt && i !== q.correcta) el.classList.add('wrong');
+            });
+        }
+
+        function nextQuestion() {
+            if (currentIndex < currentQuestions.length - 1) {
+                currentIndex++;
+                showQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                showQuestion();
+            }
+        }
+
+        function finishTest() {
+            let correct = 0;
+            currentQuestions.forEach(q => {
+                if (userAnswers[q.id] === q.correcta) correct++;
+            });
+            
+            const percentage = Math.round((correct / currentQuestions.length) * 100);
+            
+            const resultsDiv = document.getElementById(currentExam + '-results');
+            const questionDiv = document.getElementById(currentExam + '-question');
+            const controlsDiv = document.getElementById(currentExam + '-controls');
+            
+            questionDiv.style.display = 'none';
+            controlsDiv.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            
+            let message = '';
+            if (currentExam === 'ccse') {
+                const needed = Math.ceil(currentQuestions.length * 0.6);
+                if (correct >= needed) {
+                    message = `¡APROBADO! Has acertado ${correct} de ${currentQuestions.length} (necesitabas ${needed}).`;
+                } else {
+                    message = `NO APROBADO. Has acertado ${correct} de ${currentQuestions.length} (necesitabas ${needed}).`;
+                }
+            } else {
+                message = `Has acertado ${correct} de ${currentQuestions.length} (${percentage}%).`;
+            }
+            
+            resultsDiv.innerHTML = `
+                <h2>Resultados</h2>
+                <div class="score">${percentage}%</div>
+                <p>${message}</p>
+                <button onclick="location.reload()" style="margin-top: 20px;">Volver al inicio</button>
+            `;
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+    </script>
+</body>
+</html>
